@@ -15,5 +15,22 @@ if (length < 1 || length > 200) {
   process.exit(1);
 }
 
+// Fail-fast shape gate: the entry must be a real one-sentence, one-line
+// vow — not only whitespace, with no line break, and exactly one
+// sentence-ending mark, as its final character.
+if (ENTRY.trim().length === 0) {
+  console.error("entry must not be only whitespace");
+  process.exit(1);
+}
+if (/[\r\n]/.test(ENTRY)) {
+  console.error("entry must be a single line");
+  process.exit(1);
+}
+const terminators = ENTRY.match(/[.!?]/g) ?? [];
+if (terminators.length !== 1 || !/[.!?]$/.test(ENTRY)) {
+  console.error("entry must be exactly one sentence");
+  process.exit(1);
+}
+
 mkdirSync("/output", { recursive: true });
 writeFileSync("/output/entry.txt", ENTRY, "utf8");
